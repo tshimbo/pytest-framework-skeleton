@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 1 — pytest Framework Skeleton — Interactive Explainer</title>
+<style>
+  /* ── RESET + BASE ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117; --surface: #161b22; --surface2: #1c2333;
+    --border: #30363d; --text: #c9d1d9; --text2: #8b949e;
+    --accent: #58a6ff; --green: #3fb950; --red: #f85149;
+    --yellow: #d29922; --purple: #bc8cff; --orange: #f0883e;
+    --radius: 8px; --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --mono: 'Cascadia Code', 'Fira Code', 'SF Mono', Consolas, monospace;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font);
+         line-height: 1.7; font-size: 15px; max-width: 960px; margin: 0 auto;
+         padding: 2rem 1.5rem 6rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: var(--mono); font-size: 0.92em; background: var(--surface2);
+         padding: 2px 6px; border-radius: 4px; color: var(--green); }
+
+  /* ── HEADER ────────────────────────────────────────────────── */
+  .hero { text-align: center; padding: 3rem 0 2rem; }
+  .hero h1 { font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+  .hero p { color: var(--text2); font-size: 1.05rem; }
+  .badge-row { display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+  .badge { display: inline-block; font-size: 0.75rem; padding: 3px 10px;
+           border-radius: 12px; font-weight: 600; }
+  .badge-green  { background: #0e331a; color: var(--green); }
+  .badge-blue   { background: #0c2d4a; color: var(--accent); }
+  .badge-purple { background: #1f0d38; color: var(--purple); }
+  .badge-orange { background: #341a04; color: var(--orange); }
+
+  /* ── TABLE OF CONTENTS ─────────────────────────────────────── */
+  .toc { background: var(--surface); border: 1px solid var(--border);
+         border-radius: var(--radius); padding: 1.5rem; margin: 2rem 0; }
+  .toc h2 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--accent); }
+  .toc ol { padding-left: 1.5rem; }
+  .toc li { margin-bottom: 0.35rem; }
+  .toc a { color: var(--text); }
+  .toc a:hover { color: var(--accent); }
+
+  /* ── SECTIONS ──────────────────────────────────────────────── */
+  section { margin-top: 3rem; }
+  section > h2 { font-size: 1.4rem; color: var(--accent);
+                 border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+
+  /* ── COLLAPSIBLE ───────────────────────────────────────────── */
+  details { background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); margin: 1rem 0; }
+  details[open] { border-color: var(--accent); }
+  summary { cursor: pointer; padding: 0.8rem 1.2rem; font-weight: 600;
+            list-style: none; display: flex; align-items: center; gap: 0.6rem;
+            user-select: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: '▶'; font-size: 0.7rem; transition: transform 0.2s;
+                    color: var(--accent); }
+  details[open] > summary::before { transform: rotate(90deg); }
+  .details-body { padding: 0 1.2rem 1.2rem; }
+  .details-body p { margin-bottom: 0.8rem; }
+
+  /* ── CODE BLOCKS ───────────────────────────────────────────── */
+  pre { background: var(--surface2); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 1rem 1.2rem; overflow-x: auto;
+        font-family: var(--mono); font-size: 0.85rem; line-height: 1.6;
+        margin: 0.8rem 0; color: var(--text); }
+  .kw   { color: var(--purple); }   /* keyword */
+  .fn   { color: #dcdcaa; }         /* function */
+  .str  { color: #ce9178; }         /* string */
+  .cmt  { color: #6a9955; }         /* comment */
+  .dec  { color: var(--yellow); }   /* decorator */
+  .typ  { color: #4ec9b0; }        /* type */
+  .num  { color: #b5cea8; }        /* number */
+
+  /* ── DIAGRAM ───────────────────────────────────────────────── */
+  .diagram { background: var(--surface); border: 1px solid var(--border);
+             border-radius: var(--radius); padding: 1.5rem; margin: 1rem 0;
+             overflow-x: auto; }
+  .diagram pre { background: transparent; border: none; padding: 0;
+                 font-size: 0.82rem; color: var(--text2); }
+
+  /* ── TABLE ─────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0;
+          font-size: 0.9rem; }
+  th { text-align: left; padding: 0.6rem 0.8rem; background: var(--surface);
+       border-bottom: 2px solid var(--accent); color: var(--accent); }
+  td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: var(--surface); }
+
+  /* ── CALLOUT ───────────────────────────────────────────────── */
+  .callout { border-left: 4px solid var(--accent); background: var(--surface);
+             padding: 0.8rem 1rem; margin: 1rem 0; border-radius: 0 var(--radius) var(--radius) 0; }
+  .callout.warn { border-left-color: var(--yellow); }
+  .callout.good { border-left-color: var(--green); }
+  .callout strong { display: block; margin-bottom: 0.3rem; }
+
+  /* ── FLOW CHART (CSS-only) ─────────────────────────────────── */
+  .flow { display: flex; gap: 0; align-items: center; flex-wrap: wrap;
+          justify-content: center; margin: 1.5rem 0; }
+  .flow-box { background: var(--surface2); border: 2px solid var(--border);
+              border-radius: var(--radius); padding: 0.5rem 1rem;
+              text-align: center; font-size: 0.85rem; min-width: 110px; }
+  .flow-box.active { border-color: var(--green); color: var(--green); }
+  .flow-arrow { font-size: 1.2rem; color: var(--text2); padding: 0 0.3rem; }
+
+  /* ── FOOTER ────────────────────────────────────────────────── */
+  footer { margin-top: 4rem; text-align: center; color: var(--text2);
+           font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+
+  /* ── RESPONSIVE ────────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    body { padding: 1rem; font-size: 14px; }
+    .hero h1 { font-size: 1.5rem; }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  HERO                                                        -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<header class="hero">
+  <h1>🧪 Project 1: pytest Framework Skeleton</h1>
+  <p>SET Preparation Roadmap — Phase 1 — Interactive Explainer</p>
+  <div class="badge-row">
+    <span class="badge badge-green">29 Tests Passing</span>
+    <span class="badge badge-blue">pytest 8.4</span>
+    <span class="badge badge-purple">Python 3.9+</span>
+    <span class="badge badge-orange">80% Coverage Gate</span>
+  </div>
+</header>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  TABLE OF CONTENTS                                           -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<nav class="toc">
+  <h2>📑 Table of Contents</h2>
+  <ol>
+    <li><a href="#structure">Project Structure</a></li>
+    <li><a href="#order-model">The Order Model</a></li>
+    <li><a href="#validator">The Validator</a></li>
+    <li><a href="#conftest">Conftest Hierarchy</a></li>
+    <li><a href="#fixtures">Fixture Scopes &amp; Patterns</a></li>
+    <li><a href="#unit-tests">Unit Tests</a></li>
+    <li><a href="#parametrize">Parametrize &amp; Marks</a></li>
+    <li><a href="#integration">Integration Tests</a></li>
+    <li><a href="#hooks">pytest Hooks</a></li>
+    <li><a href="#toolchain">Makefile, Config, &amp; CI</a></li>
+    <li><a href="#discovery">How pytest Discovers Tests</a></li>
+    <li><a href="#interview">Interview Prep</a></li>
+  </ol>
+</nav>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  1 · PROJECT STRUCTURE                                       -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="structure">
+  <h2>1 · Project Structure</h2>
+  <div class="diagram">
+<pre>
+pytest-framework-skeleton/
+│
+├── <b>src/</b>                            ← Application code (what we test)
+│   ├── models/
+│   │   └── <b>order.py</b>               ← Order dataclass + enums
+│   └── validators/
+│       └── <b>order_validator.py</b>      ← Validation rules + custom exception
+│
+├── <b>tests/</b>                          ← Test code
+│   ├── <b>conftest.py</b>                 ← ROOT fixtures (available to ALL tests)
+│   ├── unit/
+│   │   ├── <b>conftest.py</b>             ← Unit-only fixtures
+│   │   ├── test_order_model.py
+│   │   └── test_order_validator.py
+│   └── integration/
+│       ├── <b>conftest.py</b>             ← Server fixture
+│       └── test_order_submission.py
+│
+├── .github/workflows/test.yml      ← CI pipeline
+├── Makefile                        ← Developer shortcuts
+└── pyproject.toml                  ← Tool configuration
+</pre>
+  </div>
+  <div class="callout">
+    <strong>📐 Key Principle</strong>
+    <code>src/</code> contains zero test code. <code>tests/</code> contains zero production code.
+    This mirrors how real trading-system repos are organized.
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  2 · THE ORDER MODEL                                         -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="order-model">
+  <h2>2 · The Order Model</h2>
+
+  <details>
+    <summary>🏗️ What is a <code>@dataclass</code>?</summary>
+    <div class="details-body">
+      <p>A <code>@dataclass</code> tells Python: <em>"This class is a container for data — auto-generate the boring methods."</em></p>
+      <table>
+        <tr><th>Auto-Generated</th><th>What It Does</th></tr>
+        <tr><td><code>__init__()</code></td><td>Constructor from field declarations</td></tr>
+        <tr><td><code>__repr__()</code></td><td>Pretty-print for debugging</td></tr>
+        <tr><td><code>__eq__()</code></td><td>Compare two instances by field values</td></tr>
+      </table>
+      <pre><span class="dec">@dataclass</span>
+<span class="kw">class</span> <span class="typ">Order</span>:
+    symbol: <span class="typ">str</span>              <span class="cmt"># e.g. "AAPL"</span>
+    side: <span class="typ">Side</span>                <span class="cmt"># BUY or SELL</span>
+    quantity: <span class="typ">int</span>             <span class="cmt"># number of shares</span>
+    price: <span class="typ">float</span>              <span class="cmt"># price per share</span>
+    order_type: <span class="typ">OrderType</span>     <span class="cmt"># LIMIT or MARKET</span></pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>🔒 Why Enums?</summary>
+    <div class="details-body">
+      <p>Enums restrict a field to a fixed set of known values. This eliminates typo bugs.</p>
+      <pre><span class="kw">class</span> <span class="typ">Side</span>(<span class="typ">Enum</span>):
+    BUY  = <span class="str">"BUY"</span>
+    SELL = <span class="str">"SELL"</span>
+
+<span class="cmt"># ✅ order.side = Side.BUY</span>
+<span class="cmt"># ❌ order.side = Side.BANANA  →  AttributeError</span>
+<span class="cmt"># ⚠️ order.side = "BUUY"       →  silent bug (no Enum = no catch)</span></pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>🏭 <code>field(default_factory=...)</code></summary>
+    <div class="details-body">
+      <p><strong>Problem:</strong> Default values are evaluated <em>once</em> at class definition time.</p>
+      <pre><span class="cmt"># ❌ BAD — every Order shares the SAME id</span>
+order_id: <span class="typ">str</span> = <span class="fn">str</span>(<span class="fn">uuid4</span>())
+
+<span class="cmt"># ✅ GOOD — lambda runs fresh for each instance</span>
+order_id: <span class="typ">str</span> = <span class="fn">field</span>(default_factory=<span class="kw">lambda</span>: <span class="fn">str</span>(<span class="fn">uuid4</span>()))</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>📊 Order Lifecycle</summary>
+    <div class="details-body">
+      <div class="flow">
+        <div class="flow-box active">NEW</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">PARTIALLY_FILLED</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">FILLED</div>
+      </div>
+      <div class="flow" style="margin-top:0.5rem;">
+        <div class="flow-box">CANCELLED</div>
+        <span class="flow-arrow" style="visibility:hidden">→</span>
+        <div class="flow-box">REJECTED</div>
+      </div>
+      <p style="margin-top:1rem;"><code>is_complete</code> returns <code>True</code> for <strong>FILLED</strong>, <strong>CANCELLED</strong>, and <strong>REJECTED</strong> — the three terminal states.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  3 · THE VALIDATOR                                           -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="validator">
+  <h2>3 · The Validator</h2>
+
+  <details>
+    <summary>💥 Custom Exception with field tracking</summary>
+    <div class="details-body">
+      <pre><span class="kw">class</span> <span class="typ">ValidationError</span>(<span class="typ">Exception</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, field: <span class="typ">str</span>, message: <span class="typ">str</span>):
+        <span class="kw">self</span>.field   = field    <span class="cmt"># "symbol", "quantity", "price"</span>
+        <span class="kw">self</span>.message = message  <span class="cmt"># human-readable description</span></pre>
+      <p>Tests can assert on <code>exc.field == "quantity"</code> — precise, not message-matching.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>🛡️ Guard Clause Pattern</summary>
+    <div class="details-body">
+      <pre><span class="kw">def</span> <span class="fn">_validate_symbol</span>(symbol):
+    <span class="kw">if not</span> symbol:                    <span class="cmt"># Guard 1: empty?</span>
+        <span class="kw">raise</span> <span class="typ">ValidationError</span>(<span class="str">"symbol"</span>, <span class="str">"cannot be empty"</span>)
+    <span class="kw">if</span> symbol <span class="kw">not in</span> VALID_SYMBOLS:   <span class="cmt"># Guard 2: unknown?</span>
+        <span class="kw">raise</span> <span class="typ">ValidationError</span>(<span class="str">"symbol"</span>, <span class="str">f"unknown: {symbol}"</span>)
+    <span class="cmt"># Implicit return None → symbol is valid</span></pre>
+      <p>Each guard checks one bad case and bails immediately. This keeps the code flat — no nested if/elif/else.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>⚡ Why a <code>set</code> for VALID_SYMBOLS?</summary>
+    <div class="details-body">
+      <table>
+        <tr><th>Structure</th><th><code>"AAPL" in x</code></th><th>Why</th></tr>
+        <tr><td><code>set</code></td><td>O(1)</td><td>Hash lookup</td></tr>
+        <tr><td><code>list</code></td><td>O(n)</td><td>Linear scan</td></tr>
+      </table>
+      <p>At 16 symbols it's trivial. At 10,000 (real exchange), a set is <strong>essential</strong>.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  4 · CONFTEST HIERARCHY                                      -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="conftest">
+  <h2>4 · Conftest Hierarchy</h2>
+
+  <details open>
+    <summary>📁 How conftest.py scoping works</summary>
+    <div class="details-body">
+      <div class="diagram">
+<pre>
+tests/
+├── <span style="color:var(--green)">conftest.py</span>              ← Level 0: ALL tests
+│     ↕ sample_buy_order, make_order, db_connection
+│
+├── unit/
+│   ├── <span style="color:var(--yellow)">conftest.py</span>          ← Level 1: unit tests ONLY
+│   │     ↕ cancelled_order, bulk_orders
+│   ├── test_order_model.py
+│   └── test_order_validator.py
+│
+└── integration/
+    ├── <span style="color:var(--purple)">conftest.py</span>          ← Level 1: integration tests ONLY
+    │     ↕ http_server
+    └── test_order_submission.py
+</pre>
+      </div>
+      <div class="callout good">
+        <strong>✅ Discovery Rule</strong>
+        When a test requests a fixture, pytest searches: <strong>test file → closest conftest → parent conftest → plugins</strong>. First match wins.
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  5 · FIXTURE SCOPES & PATTERNS                               -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="fixtures">
+  <h2>5 · Fixture Scopes &amp; Patterns</h2>
+
+  <details>
+    <summary>⏱️ The four fixture scopes</summary>
+    <div class="details-body">
+      <table>
+        <tr><th>Scope</th><th>Lifetime</th><th>Use For</th></tr>
+        <tr><td><code>session</code></td><td>Entire test run</td><td>DB connections, Docker containers</td></tr>
+        <tr><td><code>module</code></td><td>One test file</td><td>HTTP servers, file handles</td></tr>
+        <tr><td><code>class</code></td><td>One test class</td><td>Shared class state</td></tr>
+        <tr><td><code>function</code></td><td>One test (default)</td><td>Mutable objects like Order instances</td></tr>
+      </table>
+      <div class="diagram">
+<pre>
+← Broader = FASTER (less setup/teardown) ──────────────────────────→
+← Narrower = SAFER (no shared mutable state) ─────────────────────→
+
+  session ◄────► module ◄────► class ◄────► function
+</pre>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>🔄 Yield fixtures (setup / teardown)</summary>
+    <div class="details-body">
+<pre><span class="dec">@pytest.fixture</span>(scope=<span class="str">"session"</span>)
+<span class="kw">def</span> <span class="fn">db_connection</span>():
+    conn = <span class="fn">connect</span>()       <span class="cmt"># ← SETUP</span>
+    <span class="kw">yield</span> conn             <span class="cmt"># ← test runs here (conn injected)</span>
+    conn.<span class="fn">close</span>()           <span class="cmt"># ← TEARDOWN (guaranteed to run)</span></pre>
+      <p>Code <strong>after</strong> <code>yield</code> always runs — even if a test fails. It's like <code>finally</code>.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>🏭 Factory fixture pattern</summary>
+    <div class="details-body">
+<pre><span class="dec">@pytest.fixture</span>
+<span class="kw">def</span> <span class="fn">make_order</span>():
+    <span class="kw">def</span> <span class="fn">_make_order</span>(**kwargs) -> <span class="typ">Order</span>:
+        defaults = {<span class="str">"symbol"</span>: <span class="str">"AAPL"</span>, <span class="str">"side"</span>: Side.BUY, ...}
+        defaults.<span class="fn">update</span>(kwargs)       <span class="cmt"># Override only what you specify</span>
+        <span class="kw">return</span> <span class="typ">Order</span>(**defaults)
+    <span class="kw">return</span> _make_order              <span class="cmt"># Return the FUNCTION, not an Order</span></pre>
+      <table>
+        <tr><th>Need</th><th>Regular Fixture</th><th>Factory</th></tr>
+        <tr><td>One default order</td><td>✅</td><td>✅ <code>make_order()</code></td></tr>
+        <tr><td>Custom symbol</td><td>❌ new fixture</td><td>✅ <code>make_order(symbol="TSLA")</code></td></tr>
+        <tr><td>10 diverse orders</td><td>❌ 10 fixtures</td><td>✅ loop</td></tr>
+      </table>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  6 · UNIT TESTS                                              -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="unit-tests">
+  <h2>6 · Unit Tests</h2>
+
+  <details>
+    <summary>🧩 Dependency injection in action</summary>
+    <div class="details-body">
+<pre><span class="kw">def</span> <span class="fn">test_buy_order_has_correct_side</span>(self, sample_buy_order: <span class="typ">Order</span>) -> <span class="typ">None</span>:
+    <span class="kw">assert</span> sample_buy_order.side == Side.BUY</pre>
+      <p>The test <strong>never imports conftest.py</strong>. It just names <code>sample_buy_order</code> in the parameter list. pytest:</p>
+      <ol>
+        <li>Sees the parameter name</li>
+        <li>Looks it up in the fixture registry</li>
+        <li>Calls the fixture function</li>
+        <li>Passes the return value as the argument</li>
+      </ol>
+      <div class="callout">
+        <strong>💡 This is Dependency Injection</strong>
+        The same pattern used by Spring, Angular, and FastAPI — but built into pytest's core.
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>📊 14 unit tests in <code>test_order_model.py</code></summary>
+    <div class="details-body">
+      <table>
+        <tr><th>Class</th><th># Tests</th><th>Covers</th></tr>
+        <tr><td><code>TestOrderCreation</code></td><td>3</td><td>BUY/SELL creation, unique IDs</td></tr>
+        <tr><td><code>TestOrderProperties</code></td><td>5</td><td>remaining_quantity, is_complete for each status</td></tr>
+        <tr><td><code>TestOrderFactory</code></td><td>3</td><td>Factory default, override, batch creation</td></tr>
+        <tr><td><code>TestSessionScopedFixture</code></td><td>3</td><td>Proves session-scoped fixtures persist across tests</td></tr>
+      </table>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  7 · PARAMETRIZE & MARKS                                     -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="parametrize">
+  <h2>7 · Parametrize &amp; Marks</h2>
+
+  <details open>
+    <summary>🔁 <code>@pytest.mark.parametrize</code></summary>
+    <div class="details-body">
+<pre><span class="dec">@pytest.mark.parametrize</span>(
+    <span class="str">"symbol, side, qty, price, order_type, expected"</span>,
+    [
+        (<span class="str">"AAPL"</span>, Side.BUY,  <span class="num">100</span>, <span class="num">150.0</span>, OrderType.LIMIT,  <span class="kw">None</span>),       <span class="cmt"># valid</span>
+        (<span class="str">"AAPL"</span>, Side.BUY,  <span class="num">0</span>,   <span class="num">150.0</span>, OrderType.LIMIT,  <span class="str">"quantity"</span>), <span class="cmt"># zero qty</span>
+        (<span class="str">"AAPL"</span>, Side.SELL, <span class="num">100</span>, <span class="num">-10.0</span>, OrderType.LIMIT,  <span class="str">"price"</span>),    <span class="cmt"># neg price</span>
+        (<span class="str">""</span>,     Side.BUY,  <span class="num">100</span>, <span class="num">150.0</span>, OrderType.LIMIT,  <span class="str">"symbol"</span>),   <span class="cmt"># empty</span>
+        (<span class="str">"MSFT"</span>, Side.BUY,  <span class="num">2000000</span>, <span class="num">300</span>, OrderType.LIMIT, <span class="str">"quantity"</span>), <span class="cmt"># fat finger</span>
+    ],
+    ids=[<span class="str">"valid"</span>, <span class="str">"zero_qty"</span>, <span class="str">"neg_price"</span>, <span class="str">"empty_sym"</span>, <span class="str">"oversized"</span>],
+)</pre>
+      <p>One function → <strong>5 separate test cases</strong> in CI output:</p>
+<pre>test_order_validation_cases[valid]      <span style="color:var(--green)">PASSED</span>
+test_order_validation_cases[zero_qty]   <span style="color:var(--green)">PASSED</span>
+test_order_validation_cases[neg_price]  <span style="color:var(--green)">PASSED</span>
+test_order_validation_cases[empty_sym]  <span style="color:var(--green)">PASSED</span>
+test_order_validation_cases[oversized]  <span style="color:var(--green)">PASSED</span></pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>🏷️ Custom marks: smoke, regression, slow</summary>
+    <div class="details-body">
+      <table>
+        <tr><th>Mark</th><th>Purpose</th><th>Command</th></tr>
+        <tr><td><code>@pytest.mark.smoke</code></td><td>Quick sanity checks</td><td><code>make smoke</code></td></tr>
+        <tr><td><code>@pytest.mark.regression</code></td><td>Guards against known bugs</td><td><code>make regression</code></td></tr>
+        <tr><td><code>@pytest.mark.slow</code></td><td>Expensive tests</td><td><code>pytest -m "not slow"</code></td></tr>
+        <tr><td><code>@pytest.mark.integration</code></td><td>Needs external resources</td><td><code>make integration</code></td></tr>
+      </table>
+      <div class="callout warn">
+        <strong>⚠️ --strict-markers</strong>
+        In <code>pyproject.toml</code>, <code>addopts = "--strict-markers"</code> means a typo like <code>@pytest.mark.smok</code> becomes an <strong>error</strong>, not a silently-created new mark.
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  8 · INTEGRATION TESTS                                       -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="integration">
+  <h2>8 · Integration Tests</h2>
+
+  <details open>
+    <summary>🌐 Live HTTP server architecture</summary>
+    <div class="details-body">
+      <div class="diagram">
+<pre>
+┌──────────────────┐                   ┌──────────────────────────┐
+│   Test Function   │   HTTP POST      │   HTTPServer              │
+│   (function scope) │ ─────────────►  │   (module scope,          │
+│                    │                  │    background thread)     │
+│                    │  ◄───────────── │                            │
+│                    │   JSON response  │   received_orders: [ ]    │
+└──────────────────┘                   └──────────────────────────┘
+</pre>
+      </div>
+<pre><span class="dec">@pytest.fixture</span>(scope=<span class="str">"module"</span>)
+<span class="kw">def</span> <span class="fn">http_server</span>():
+    server = <span class="typ">HTTPServer</span>((<span class="str">"localhost"</span>, <span class="num">0</span>), Handler)  <span class="cmt"># Port 0 = random free port</span>
+    port = server.server_address[<span class="num">1</span>]
+    thread = <span class="typ">Thread</span>(target=server.serve_forever, daemon=<span class="kw">True</span>)
+    thread.<span class="fn">start</span>()
+    <span class="kw">yield</span> (<span class="str">"localhost"</span>, port)
+    server.<span class="fn">shutdown</span>()</pre>
+      <p><strong>Port 0</strong>: OS picks a random available port — no conflicts in CI.</p>
+      <p><strong>daemon=True</strong>: Thread dies if the process crashes.</p>
+      <p><strong>Module scope</strong>: Server boots once per file, not once per test.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>❌ Negative testing</summary>
+    <div class="details-body">
+<pre><span class="kw">def</span> <span class="fn">test_invalid_json_returns_400</span>(self, http_server):
+    req = <span class="typ">Request</span>(url, data=<span class="str">b"not json"</span>, method=<span class="str">"POST"</span>)
+    <span class="kw">try</span>:
+        <span class="fn">urlopen</span>(req)
+        <span class="kw">assert</span> <span class="kw">False</span>, <span class="str">"Expected HTTP 400"</span>
+    <span class="kw">except</span> <span class="typ">HTTPError</span> <span class="kw">as</span> e:
+        <span class="kw">assert</span> e.code == <span class="num">400</span></pre>
+      <p>Good tests verify the system handles <strong>bad input</strong> gracefully — not just the happy path.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  9 · PYTEST HOOKS                                            -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="hooks">
+  <h2>9 · pytest Hooks</h2>
+
+  <details>
+    <summary>🪝 <code>pytest_runtest_logreport</code></summary>
+    <div class="details-body">
+<pre><span class="kw">def</span> <span class="fn">pytest_runtest_logreport</span>(report):
+    <span class="kw">if</span> report.when == <span class="str">"call"</span>:
+        ts = datetime.now().strftime(<span class="str">"%H:%M:%S.%f"</span>)[:<span class="num">12</span>]
+        outcome = <span class="str">"PASSED"</span> <span class="kw">if</span> report.passed <span class="kw">else</span> <span class="str">"FAILED"</span>
+        <span class="fn">print</span>(<span class="str">f"[{ts}] {outcome} {report.nodeid} ({report.duration:.3f}s)"</span>)</pre>
+      <p>Fires after every test phase. <code>when == "call"</code> filters to the actual test (not setup/teardown).</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>⚙️ <code>pytest_configure</code></summary>
+    <div class="details-body">
+<pre><span class="kw">def</span> <span class="fn">pytest_configure</span>(config):
+    config._metadata[<span class="str">"Project"</span>] = <span class="str">"pytest-framework-skeleton"</span></pre>
+      <p>Runs once at startup. Adds metadata to the HTML report header.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  10 · MAKEFILE, CONFIG, CI                                   -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="toolchain">
+  <h2>10 · Makefile, Config, &amp; CI</h2>
+
+  <details>
+    <summary>🔧 Makefile targets</summary>
+    <div class="details-body">
+      <table>
+        <tr><th>Target</th><th>What It Does</th></tr>
+        <tr><td><code>make install</code></td><td>Install all deps + editable package</td></tr>
+        <tr><td><code>make test</code></td><td>Run all 29 tests</td></tr>
+        <tr><td><code>make smoke</code></td><td>Only <code>@pytest.mark.smoke</code></td></tr>
+        <tr><td><code>make cov</code></td><td>Tests + 80% coverage gate</td></tr>
+        <tr><td><code>make report</code></td><td>HTML + JSON report</td></tr>
+        <tr><td><code>make lint</code></td><td>flake8</td></tr>
+        <tr><td><code>make typecheck</code></td><td>mypy</td></tr>
+        <tr><td><code>make parallel</code></td><td>Run with pytest-xdist (<code>-n auto</code>)</td></tr>
+        <tr><td><code>make ci</code></td><td>lint → typecheck → cov → report</td></tr>
+        <tr><td><code>make clean</code></td><td>Remove generated artifacts</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>📦 pyproject.toml — 4 tools, 1 file</summary>
+    <div class="details-body">
+<pre><span class="cmt"># ── pytest ──</span>
+[tool.pytest.ini_options]
+testpaths = [<span class="str">"tests"</span>]
+addopts = <span class="str">"-v --strict-markers"</span>
+
+<span class="cmt"># ── mypy ──</span>
+[tool.mypy]
+disallow_untyped_defs = <span class="kw">true</span>
+
+<span class="cmt"># ── coverage ──</span>
+[tool.coverage.report]
+fail_under = <span class="num">80</span>
+show_missing = <span class="kw">true</span></pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>🚀 CI Pipeline (GitHub Actions)</summary>
+    <div class="details-body">
+      <div class="flow">
+        <div class="flow-box">Push / PR</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Lint</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Typecheck</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box active">Cov ≥ 80%</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Report</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Upload</div>
+      </div>
+      <p style="margin-top:1rem;"><strong>Matrix</strong>: Python 3.11 + 3.12 run in parallel.<br>
+      <strong>Artifact</strong>: HTML report is downloadable from the Actions page.<br>
+      <strong>Fail-fast</strong>: Coverage below 80% fails the build immediately.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  11 · HOW PYTEST DISCOVERS TESTS                             -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="discovery">
+  <h2>11 · How pytest Discovers &amp; Runs Tests</h2>
+
+  <details open>
+    <summary>🔍 Discovery phase</summary>
+    <div class="details-body">
+      <div class="diagram">
+<pre>
+pytest starts
+  │
+  ├─ Read pyproject.toml → testpaths = ["tests"]
+  ├─ Walk tests/ recursively
+  ├─ Find files matching <b>test_*.py</b>
+  ├─ Find <b>conftest.py</b> at each level
+  ├─ Inside each file, find:
+  │   ├─ Functions named <b>test_*</b>
+  │   └─ Classes named <b>Test*</b> with methods named <b>test_*</b>
+  └─ Expand <b>@parametrize</b> into individual items
+</pre>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>▶️ Execution phase (per test)</summary>
+    <div class="details-body">
+      <div class="flow">
+        <div class="flow-box">SETUP</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box active">CALL</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">TEARDOWN</div>
+      </div>
+      <table style="margin-top:1rem">
+        <tr><th>Phase</th><th>What Happens</th></tr>
+        <tr><td><strong>SETUP</strong></td><td>Resolve fixture dependencies, create fixtures, inject values</td></tr>
+        <tr><td><strong>CALL</strong></td><td>Run the test function, record pass/fail/error</td></tr>
+        <tr><td><strong>TEARDOWN</strong></td><td>Run code after <code>yield</code>, destroy function-scoped fixtures</td></tr>
+      </table>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  12 · INTERVIEW PREP                                         -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<section id="interview">
+  <h2>12 · Interview Prep</h2>
+
+  <details open>
+    <summary>🎯 Questions this project answers</summary>
+    <div class="details-body">
+      <table>
+        <tr><th>Interview Question</th><th>Your Answer</th></tr>
+        <tr>
+          <td>"Explain conftest.py scoping"</td>
+          <td>Root conftest fixtures are available to all tests. Subdirectory conftest fixtures are scoped to that directory. pytest searches from the test file upward. First match wins.</td>
+        </tr>
+        <tr>
+          <td>"When would you use session vs function scope?"</td>
+          <td>Session for expensive one-time resources (DB connections). Function for mutable objects. Tradeoff: speed vs test isolation.</td>
+        </tr>
+        <tr>
+          <td>"How do you test error handling?"</td>
+          <td><code>pytest.raises</code> as a context manager, then assert on the exception's structured attributes — not message strings.</td>
+        </tr>
+        <tr>
+          <td>"How do you handle test data?"</td>
+          <td>Factory fixtures with sensible defaults. Override only what differs per test. Scales better than one fixture per scenario.</td>
+        </tr>
+        <tr>
+          <td>"How do you keep CI fast?"</td>
+          <td>Marks (smoke/slow), parallel execution with xdist, coverage gates to catch untested code, pip caching.</td>
+        </tr>
+        <tr>
+          <td>"Walk me through your CI pipeline"</td>
+          <td>Every PR: lint → typecheck → tests with 80% coverage gate → HTML report uploaded as artifact. Matrix tested on 3.11 and 3.12.</td>
+        </tr>
+      </table>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  FOOTER                                                      -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<footer>
+  <p>SET Preparation Roadmap · Phase 1 · Project 1 · Built with pytest 8.4 on Python 3.9+</p>
+  <p style="margin-top:0.5rem;">Open <code>docs/DEEP_DIVE.md</code> for the full text version.</p>
+</footer>
+
+<!-- ═════════════════════════════════════════════════════════════ -->
+<!--  EXPAND ALL / COLLAPSE ALL                                   -->
+<!-- ═════════════════════════════════════════════════════════════ -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Toggle button
+  const btn = document.createElement('button');
+  btn.textContent = '▼ Expand All';
+  btn.style.cssText = `
+    position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
+    background: var(--surface); color: var(--accent); border: 1px solid var(--accent);
+    border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer;
+    font-family: var(--font); font-size: 0.85rem; transition: all 0.2s;
+  `;
+  btn.onmouseenter = () => btn.style.background = 'var(--accent)';
+  btn.onmouseenter = () => { btn.style.background = 'var(--accent)'; btn.style.color = '#0d1117'; };
+  btn.onmouseleave = () => { btn.style.background = 'var(--surface)'; btn.style.color = 'var(--accent)'; };
+
+  let allOpen = false;
+  btn.onclick = () => {
+    allOpen = !allOpen;
+    document.querySelectorAll('details').forEach(d => d.open = allOpen);
+    btn.textContent = allOpen ? '▲ Collapse All' : '▼ Expand All';
+  };
+  document.body.appendChild(btn);
+});
+</script>
+
+</body>
+</html>
