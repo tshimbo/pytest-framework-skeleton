@@ -55,7 +55,7 @@ HOW THIS MAPS TO CITADEL SECURITIES:
 
 # ─── IMPORTS ────────────────────────────────────────────────────────────────
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Generator
 
 import pytest  # The testing framework. Provides @pytest.fixture, marks, hooks, etc.
@@ -101,7 +101,7 @@ def db_connection() -> Generator[dict, None, None]:
         "host": "localhost",
         "port": 5432,
         "db": "test_trading",
-        "connected_at": datetime.utcnow().isoformat(),
+        "connected_at": datetime.now(timezone.utc).isoformat(),
         "query_count": 0,  # Tests can increment this to simulate queries
     }
     print(f"\n[FIXTURE] DB connection opened at {conn['connected_at']}")
@@ -281,7 +281,7 @@ def pytest_runtest_logreport(report: pytest.TestReport) -> None:
         - This is a stepping stone to Project 9's full observability stack
     """
     if report.when == "call":  # Only log the actual test, not setup/teardown
-        timestamp = datetime.utcnow().strftime("%H:%M:%S.%f")[:-3]  # HH:MM:SS.mmm
+        timestamp = datetime.now(timezone.utc).strftime("%H:%M:%S.%f")[:-3]  # HH:MM:SS.mmm
         outcome = report.outcome.upper()       # "PASSED" or "FAILED"
         duration = f"{report.duration:.3f}s"    # e.g., "0.003s"
         print(f"  [{timestamp}] {outcome} {report.nodeid} ({duration})")

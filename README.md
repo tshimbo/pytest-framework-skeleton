@@ -1,6 +1,8 @@
 # pytest Framework Skeleton
 
 [![Tests](https://github.com/tshimbo/pytest-framework-skeleton/actions/workflows/test.yml/badge.svg)](https://github.com/tshimbo/pytest-framework-skeleton/actions/workflows/test.yml)
+[![Security](https://github.com/tshimbo/pytest-framework-skeleton/actions/workflows/security.yml/badge.svg)](https://github.com/tshimbo/pytest-framework-skeleton/actions/workflows/security.yml)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 > A reusable pytest project with shared fixtures, conftest hierarchy, parametrize, HTML/JSON reporting, and GitHub Actions CI. Built as **Project 1** of the SET (Software Engineer in Test) preparation roadmap.
 
@@ -110,7 +112,7 @@ def test_symbol_lookup(input, expected):
 
 ## CI Pipeline
 
-On every push and PR:
+On every push and PR, across Python 3.11, 3.12, and 3.13 (29 tests, 98% coverage, warnings treated as errors):
 1. **Lint** — flake8 with 120 char line limit
 2. **Type check** — mypy strict mode
 3. **Tests + Coverage** — Fails if coverage drops below 80%
@@ -121,3 +123,6 @@ Matrix tested on Python 3.11 and 3.12.
 ---
 
 *Built as part of the SET Preparation Roadmap — Phase 1, Project 1.*
+
+## License
+MIT

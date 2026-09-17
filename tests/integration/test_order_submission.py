@@ -172,8 +172,7 @@ class TestOrderSubmission:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        try:
+        with pytest.raises(urllib.error.HTTPError) as exc_info:
             urllib.request.urlopen(req)
-            assert False, "Expected HTTP 400"  # If we get here, the test fails
-        except urllib.error.HTTPError as e:
-            assert e.code == 400  # PASS Server correctly rejected bad input
+        assert exc_info.value.code == 400  # PASS Server correctly rejected bad input
+        exc_info.value.close()  # HTTPError holds the open response; close it to free the socket

@@ -144,4 +144,5 @@ def http_server() -> Generator[tuple[str, int], None, None]:
 
     # ── TEARDOWN PHASE ───
     server.shutdown()  # Gracefully stop the server (waits for in-flight requests)
+    server.server_close()  # Release the listening socket so no ResourceWarning is raised
     print("\n[FIXTURE] HTTP server stopped")

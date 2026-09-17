@@ -42,9 +42,9 @@ from typing import Optional
 # Every order gets a unique ID so we can track it through the system.
 import uuid
 
-# datetime.utcnow() gives the current time in UTC — important for trading
+# datetime.now(timezone.utc) gives the current time in UTC — important for trading
 # because exchanges in different time zones need a common reference.
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 # ─── ENUM: Side ─────────────────────────────────────────────────────────────
@@ -155,7 +155,7 @@ class Order:
     filled_quantity: int = 0
     # Starts at 0. Incremented as the exchange fills portions of the order.
 
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     # Records when this Order object was created. Uses UTC to avoid timezone issues.
     # In a real system, this would be the timestamp the OMS received the order.
 

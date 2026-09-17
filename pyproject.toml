@@ -1,6 +1,6 @@
 [project]
 name = "pytest-framework-skeleton"
-version = "0.1.0"
+version = "1.0.0"
 description = "A reusable pytest framework with shared fixtures, conftest hierarchy, parameterize, and reporting plugins."
 requires-python = ">=3.9"
 
@@ -14,13 +14,11 @@ markers = [
     "unit: marks tests as unit tests",
 ]
 addopts = "-v --strict-markers"
+filterwarnings = ["error"]
 
 [tool.mypy]
 python_version = "3.12"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-check_untyped_defs = true
+strict = true
 
 [tool.coverage.run]
 source = ["src"]
