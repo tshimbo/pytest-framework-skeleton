@@ -51,9 +51,9 @@ from datetime import datetime
 # In trading, every order is either a BUY or a SELL. That's it. No other option.
 # Using an Enum guarantees this at the type level.
 #
-# Usage:  order.side = Side.BUY     ✅
-#         order.side = "BUY"        ❌ (type checker would warn)
-#         order.side = Side.BANANA  ❌ (AttributeError at runtime)
+# Usage:  order.side = Side.BUY     PASS
+#         order.side = "BUY"        FAIL (type checker would warn)
+#         order.side = Side.BANANA  FAIL (AttributeError at runtime)
 class Side(Enum):
     """Order side: BUY or SELL."""
     BUY = "BUY"    # Buyer wants to purchase shares

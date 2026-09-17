@@ -135,10 +135,10 @@ class TestValidateOrder:
         )
 
         if expected_error_field is None:
-            # ✅ This case should pass validation without raising
+            # PASS This case should pass validation without raising
             assert validate_order(order) is True
         else:
-            # ❌ This case should RAISE a ValidationError.
+            # FAIL This case should RAISE a ValidationError.
             # pytest.raises catches the exception and stores it in exc_info.
             with pytest.raises(ValidationError) as exc_info:
                 validate_order(order)
@@ -172,8 +172,8 @@ class TestValidateOrder:
         """LIMIT orders MUST have a price — omitting it must be rejected.
 
         This is the counterpart to the above test. Together they verify:
-            MARKET + no price = ✅  (test above)
-            LIMIT  + no price = ❌  (this test)
+            MARKET + no price = PASS  (test above)
+            LIMIT  + no price = FAIL  (this test)
         """
         order = Order(
             symbol="AAPL",

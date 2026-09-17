@@ -52,25 +52,25 @@ pytest-framework-skeleton/
 │   ├── __init__.py               # Makes src/ a Python package
 │   ├── models/
 │   │   ├── __init__.py
-│   │   └── order.py              # ⭐ The Order dataclass + enums
+│   │   └── order.py              # The Order dataclass + enums
 │   └── validators/
 │       ├── __init__.py
-│       └── order_validator.py    # ⭐ Validation logic + custom exception
+│       └── order_validator.py    # Validation logic + custom exception
 │
 ├── tests/                        # TEST CODE
 │   ├── __init__.py
-│   ├── conftest.py               # ⭐ ROOT conftest — fixtures for ALL tests
+│   ├── conftest.py               # ROOT conftest — fixtures for ALL tests
 │   ├── unit/                     # Unit tests (no I/O, no servers)
 │   │   ├── __init__.py
-│   │   ├── conftest.py           # ⭐ Unit-specific fixtures
+│   │   ├── conftest.py           # Unit-specific fixtures
 │   │   ├── test_order_model.py   # Tests for the Order dataclass
-│   │   └── test_order_validator.py # ⭐ Parametrized validation tests
+│   │   └── test_order_validator.py # Parametrized validation tests
 │   └── integration/              # Integration tests (real servers, real I/O)
 │       ├── __init__.py
-│       ├── conftest.py           # ⭐ HTTP server fixture
+│       ├── conftest.py           # HTTP server fixture
 │       └── test_order_submission.py # Tests POSTing orders to live server
 │
-├── .github/workflows/test.yml    # ⭐ CI pipeline definition
+├── .github/workflows/test.yml    # CI pipeline definition
 ├── Makefile                      # Developer command shortcuts
 ├── pyproject.toml                # Project + tool configuration
 ├── requirements.txt              # Pinned dependencies
@@ -109,10 +109,10 @@ An Enum restricts a field to a **fixed set of values**. This prevents bugs:
 
 | Code | Result |
 |---|---|
-| `order.side = Side.BUY` | ✅ Valid |
-| `order.side = "BUY"` | ⚠️ Type checker warns |
-| `order.side = Side.BANANA` | ❌ AttributeError at runtime |
-| `order.side = "banana"` | ⚠️ Type checker warns, might cause silent bugs |
+| `order.side = Side.BUY` |  Valid |
+| `order.side = "BUY"` |  Type checker warns |
+| `order.side = Side.BANANA` |  AttributeError at runtime |
+| `order.side = "banana"` |  Type checker warns, might cause silent bugs |
 
 Without Enums, a typo like `"BUUY"` would pass silently and cause downstream failures.
 
@@ -128,8 +128,8 @@ Because default values are evaluated **once at class definition time**. Every Or
 
 | Approach | Result |
 |---|---|
-| `order_id = str(uuid.uuid4())` | ❌ All orders share the same ID |
-| `order_id = field(default_factory=...)` | ✅ Each order gets a unique ID |
+| `order_id = str(uuid.uuid4())` |  All orders share the same ID |
+| `order_id = field(default_factory=...)` |  Each order gets a unique ID |
 
 ### @property methods
 
@@ -305,10 +305,10 @@ def make_order():
 
 | Need | Regular Fixture | Factory Fixture |
 |---|---|---|
-| One specific order | ✅ `sample_buy_order` | `make_order()` |
-| Order with custom symbol | ❌ Need a new fixture | ✅ `make_order(symbol="TSLA")` |
-| 10 diverse orders | ❌ Need 10 fixtures | ✅ Loop: `make_order(symbol=s)` |
-| Order with only qty changed | ❌ Copy-paste fixture | ✅ `make_order(quantity=500)` |
+| One specific order |  `sample_buy_order` | `make_order()` |
+| Order with custom symbol |  Need a new fixture |  `make_order(symbol="TSLA")` |
+| 10 diverse orders |  Need 10 fixtures |  Loop: `make_order(symbol=s)` |
+| Order with only qty changed |  Copy-paste fixture |  `make_order(quantity=500)` |
 
 A factory gives you **infinite flexibility** with one fixture.
 

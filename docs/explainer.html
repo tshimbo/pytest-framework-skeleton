@@ -127,7 +127,7 @@
 <!--  HERO                                                        -->
 <!-- ═════════════════════════════════════════════════════════════ -->
 <header class="hero">
-  <h1>🧪 Project 1: pytest Framework Skeleton</h1>
+  <h1>Project 1: pytest Framework Skeleton</h1>
   <p>SET Preparation Roadmap — Phase 1 — Interactive Explainer</p>
   <div class="badge-row">
     <span class="badge badge-green">29 Tests Passing</span>
@@ -141,7 +141,7 @@
 <!--  TABLE OF CONTENTS                                           -->
 <!-- ═════════════════════════════════════════════════════════════ -->
 <nav class="toc">
-  <h2>📑 Table of Contents</h2>
+  <h2>Table of Contents</h2>
   <ol>
     <li><a href="#structure">Project Structure</a></li>
     <li><a href="#order-model">The Order Model</a></li>
@@ -189,7 +189,7 @@ pytest-framework-skeleton/
 </pre>
   </div>
   <div class="callout">
-    <strong>📐 Key Principle</strong>
+    <strong>Key Principle</strong>
     <code>src/</code> contains zero test code. <code>tests/</code> contains zero production code.
     This mirrors how real trading-system repos are organized.
   </div>
@@ -202,7 +202,7 @@ pytest-framework-skeleton/
   <h2>2 · The Order Model</h2>
 
   <details>
-    <summary>🏗️ What is a <code>@dataclass</code>?</summary>
+    <summary>What is a <code>@dataclass</code>?</summary>
     <div class="details-body">
       <p>A <code>@dataclass</code> tells Python: <em>"This class is a container for data — auto-generate the boring methods."</em></p>
       <table>
@@ -222,33 +222,33 @@ pytest-framework-skeleton/
   </details>
 
   <details>
-    <summary>🔒 Why Enums?</summary>
+    <summary>Why Enums?</summary>
     <div class="details-body">
       <p>Enums restrict a field to a fixed set of known values. This eliminates typo bugs.</p>
       <pre><span class="kw">class</span> <span class="typ">Side</span>(<span class="typ">Enum</span>):
     BUY  = <span class="str">"BUY"</span>
     SELL = <span class="str">"SELL"</span>
 
-<span class="cmt"># ✅ order.side = Side.BUY</span>
-<span class="cmt"># ❌ order.side = Side.BANANA  →  AttributeError</span>
-<span class="cmt"># ⚠️ order.side = "BUUY"       →  silent bug (no Enum = no catch)</span></pre>
+<span class="cmt"># order.side = Side.BUY</span>
+<span class="cmt"># order.side = Side.BANANA  →  AttributeError</span>
+<span class="cmt"># order.side = "BUUY"       →  silent bug (no Enum = no catch)</span></pre>
     </div>
   </details>
 
   <details>
-    <summary>🏭 <code>field(default_factory=...)</code></summary>
+    <summary><code>field(default_factory=...)</code></summary>
     <div class="details-body">
       <p><strong>Problem:</strong> Default values are evaluated <em>once</em> at class definition time.</p>
-      <pre><span class="cmt"># ❌ BAD — every Order shares the SAME id</span>
+      <pre><span class="cmt"># BAD — every Order shares the SAME id</span>
 order_id: <span class="typ">str</span> = <span class="fn">str</span>(<span class="fn">uuid4</span>())
 
-<span class="cmt"># ✅ GOOD — lambda runs fresh for each instance</span>
+<span class="cmt"># GOOD — lambda runs fresh for each instance</span>
 order_id: <span class="typ">str</span> = <span class="fn">field</span>(default_factory=<span class="kw">lambda</span>: <span class="fn">str</span>(<span class="fn">uuid4</span>()))</pre>
     </div>
   </details>
 
   <details>
-    <summary>📊 Order Lifecycle</summary>
+    <summary>Order Lifecycle</summary>
     <div class="details-body">
       <div class="flow">
         <div class="flow-box active">NEW</div>
@@ -274,7 +274,7 @@ order_id: <span class="typ">str</span> = <span class="fn">field</span>(default_f
   <h2>3 · The Validator</h2>
 
   <details>
-    <summary>💥 Custom Exception with field tracking</summary>
+    <summary>Custom Exception with field tracking</summary>
     <div class="details-body">
       <pre><span class="kw">class</span> <span class="typ">ValidationError</span>(<span class="typ">Exception</span>):
     <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, field: <span class="typ">str</span>, message: <span class="typ">str</span>):
@@ -285,7 +285,7 @@ order_id: <span class="typ">str</span> = <span class="fn">field</span>(default_f
   </details>
 
   <details>
-    <summary>🛡️ Guard Clause Pattern</summary>
+    <summary>Guard Clause Pattern</summary>
     <div class="details-body">
       <pre><span class="kw">def</span> <span class="fn">_validate_symbol</span>(symbol):
     <span class="kw">if not</span> symbol:                    <span class="cmt"># Guard 1: empty?</span>
@@ -298,7 +298,7 @@ order_id: <span class="typ">str</span> = <span class="fn">field</span>(default_f
   </details>
 
   <details>
-    <summary>⚡ Why a <code>set</code> for VALID_SYMBOLS?</summary>
+    <summary>Why a <code>set</code> for VALID_SYMBOLS?</summary>
     <div class="details-body">
       <table>
         <tr><th>Structure</th><th><code>"AAPL" in x</code></th><th>Why</th></tr>
@@ -317,7 +317,7 @@ order_id: <span class="typ">str</span> = <span class="fn">field</span>(default_f
   <h2>4 · Conftest Hierarchy</h2>
 
   <details open>
-    <summary>📁 How conftest.py scoping works</summary>
+    <summary>How conftest.py scoping works</summary>
     <div class="details-body">
       <div class="diagram">
 <pre>
@@ -338,7 +338,7 @@ tests/
 </pre>
       </div>
       <div class="callout good">
-        <strong>✅ Discovery Rule</strong>
+        <strong>Discovery Rule</strong>
         When a test requests a fixture, pytest searches: <strong>test file → closest conftest → parent conftest → plugins</strong>. First match wins.
       </div>
     </div>
@@ -352,7 +352,7 @@ tests/
   <h2>5 · Fixture Scopes &amp; Patterns</h2>
 
   <details>
-    <summary>⏱️ The four fixture scopes</summary>
+    <summary>The four fixture scopes</summary>
     <div class="details-body">
       <table>
         <tr><th>Scope</th><th>Lifetime</th><th>Use For</th></tr>
@@ -373,7 +373,7 @@ tests/
   </details>
 
   <details>
-    <summary>🔄 Yield fixtures (setup / teardown)</summary>
+    <summary>Yield fixtures (setup / teardown)</summary>
     <div class="details-body">
 <pre><span class="dec">@pytest.fixture</span>(scope=<span class="str">"session"</span>)
 <span class="kw">def</span> <span class="fn">db_connection</span>():
@@ -385,7 +385,7 @@ tests/
   </details>
 
   <details>
-    <summary>🏭 Factory fixture pattern</summary>
+    <summary>Factory fixture pattern</summary>
     <div class="details-body">
 <pre><span class="dec">@pytest.fixture</span>
 <span class="kw">def</span> <span class="fn">make_order</span>():
@@ -396,9 +396,9 @@ tests/
     <span class="kw">return</span> _make_order              <span class="cmt"># Return the FUNCTION, not an Order</span></pre>
       <table>
         <tr><th>Need</th><th>Regular Fixture</th><th>Factory</th></tr>
-        <tr><td>One default order</td><td>✅</td><td>✅ <code>make_order()</code></td></tr>
-        <tr><td>Custom symbol</td><td>❌ new fixture</td><td>✅ <code>make_order(symbol="TSLA")</code></td></tr>
-        <tr><td>10 diverse orders</td><td>❌ 10 fixtures</td><td>✅ loop</td></tr>
+        <tr><td>One default order</td><td></td><td><code>make_order()</code></td></tr>
+        <tr><td>Custom symbol</td><td>new fixture</td><td><code>make_order(symbol="TSLA")</code></td></tr>
+        <tr><td>10 diverse orders</td><td>10 fixtures</td><td>loop</td></tr>
       </table>
     </div>
   </details>
@@ -411,7 +411,7 @@ tests/
   <h2>6 · Unit Tests</h2>
 
   <details>
-    <summary>🧩 Dependency injection in action</summary>
+    <summary>Dependency injection in action</summary>
     <div class="details-body">
 <pre><span class="kw">def</span> <span class="fn">test_buy_order_has_correct_side</span>(self, sample_buy_order: <span class="typ">Order</span>) -> <span class="typ">None</span>:
     <span class="kw">assert</span> sample_buy_order.side == Side.BUY</pre>
@@ -423,14 +423,14 @@ tests/
         <li>Passes the return value as the argument</li>
       </ol>
       <div class="callout">
-        <strong>💡 This is Dependency Injection</strong>
+        <strong>This is Dependency Injection</strong>
         The same pattern used by Spring, Angular, and FastAPI — but built into pytest's core.
       </div>
     </div>
   </details>
 
   <details>
-    <summary>📊 14 unit tests in <code>test_order_model.py</code></summary>
+    <summary>14 unit tests in <code>test_order_model.py</code></summary>
     <div class="details-body">
       <table>
         <tr><th>Class</th><th># Tests</th><th>Covers</th></tr>
@@ -450,7 +450,7 @@ tests/
   <h2>7 · Parametrize &amp; Marks</h2>
 
   <details open>
-    <summary>🔁 <code>@pytest.mark.parametrize</code></summary>
+    <summary><code>@pytest.mark.parametrize</code></summary>
     <div class="details-body">
 <pre><span class="dec">@pytest.mark.parametrize</span>(
     <span class="str">"symbol, side, qty, price, order_type, expected"</span>,
@@ -473,7 +473,7 @@ test_order_validation_cases[oversized]  <span style="color:var(--green)">PASSED<
   </details>
 
   <details>
-    <summary>🏷️ Custom marks: smoke, regression, slow</summary>
+    <summary>Custom marks: smoke, regression, slow</summary>
     <div class="details-body">
       <table>
         <tr><th>Mark</th><th>Purpose</th><th>Command</th></tr>
@@ -483,7 +483,7 @@ test_order_validation_cases[oversized]  <span style="color:var(--green)">PASSED<
         <tr><td><code>@pytest.mark.integration</code></td><td>Needs external resources</td><td><code>make integration</code></td></tr>
       </table>
       <div class="callout warn">
-        <strong>⚠️ --strict-markers</strong>
+        <strong>--strict-markers</strong>
         In <code>pyproject.toml</code>, <code>addopts = "--strict-markers"</code> means a typo like <code>@pytest.mark.smok</code> becomes an <strong>error</strong>, not a silently-created new mark.
       </div>
     </div>
@@ -497,7 +497,7 @@ test_order_validation_cases[oversized]  <span style="color:var(--green)">PASSED<
   <h2>8 · Integration Tests</h2>
 
   <details open>
-    <summary>🌐 Live HTTP server architecture</summary>
+    <summary>Live HTTP server architecture</summary>
     <div class="details-body">
       <div class="diagram">
 <pre>
@@ -525,7 +525,7 @@ test_order_validation_cases[oversized]  <span style="color:var(--green)">PASSED<
   </details>
 
   <details>
-    <summary>❌ Negative testing</summary>
+    <summary>Negative testing</summary>
     <div class="details-body">
 <pre><span class="kw">def</span> <span class="fn">test_invalid_json_returns_400</span>(self, http_server):
     req = <span class="typ">Request</span>(url, data=<span class="str">b"not json"</span>, method=<span class="str">"POST"</span>)
@@ -546,7 +546,7 @@ test_order_validation_cases[oversized]  <span style="color:var(--green)">PASSED<
   <h2>9 · pytest Hooks</h2>
 
   <details>
-    <summary>🪝 <code>pytest_runtest_logreport</code></summary>
+    <summary><code>pytest_runtest_logreport</code></summary>
     <div class="details-body">
 <pre><span class="kw">def</span> <span class="fn">pytest_runtest_logreport</span>(report):
     <span class="kw">if</span> report.when == <span class="str">"call"</span>:
@@ -558,7 +558,7 @@ test_order_validation_cases[oversized]  <span style="color:var(--green)">PASSED<
   </details>
 
   <details>
-    <summary>⚙️ <code>pytest_configure</code></summary>
+    <summary><code>pytest_configure</code></summary>
     <div class="details-body">
 <pre><span class="kw">def</span> <span class="fn">pytest_configure</span>(config):
     config._metadata[<span class="str">"Project"</span>] = <span class="str">"pytest-framework-skeleton"</span></pre>
@@ -574,7 +574,7 @@ test_order_validation_cases[oversized]  <span style="color:var(--green)">PASSED<
   <h2>10 · Makefile, Config, &amp; CI</h2>
 
   <details>
-    <summary>🔧 Makefile targets</summary>
+    <summary>Makefile targets</summary>
     <div class="details-body">
       <table>
         <tr><th>Target</th><th>What It Does</th></tr>
@@ -593,7 +593,7 @@ test_order_validation_cases[oversized]  <span style="color:var(--green)">PASSED<
   </details>
 
   <details>
-    <summary>📦 pyproject.toml — 4 tools, 1 file</summary>
+    <summary>pyproject.toml — 4 tools, 1 file</summary>
     <div class="details-body">
 <pre><span class="cmt"># ── pytest ──</span>
 [tool.pytest.ini_options]
@@ -612,7 +612,7 @@ show_missing = <span class="kw">true</span></pre>
   </details>
 
   <details>
-    <summary>🚀 CI Pipeline (GitHub Actions)</summary>
+    <summary>CI Pipeline (GitHub Actions)</summary>
     <div class="details-body">
       <div class="flow">
         <div class="flow-box">Push / PR</div>
@@ -641,7 +641,7 @@ show_missing = <span class="kw">true</span></pre>
   <h2>11 · How pytest Discovers &amp; Runs Tests</h2>
 
   <details open>
-    <summary>🔍 Discovery phase</summary>
+    <summary>Discovery phase</summary>
     <div class="details-body">
       <div class="diagram">
 <pre>
@@ -661,7 +661,7 @@ pytest starts
   </details>
 
   <details>
-    <summary>▶️ Execution phase (per test)</summary>
+    <summary>▶ Execution phase (per test)</summary>
     <div class="details-body">
       <div class="flow">
         <div class="flow-box">SETUP</div>
@@ -687,7 +687,7 @@ pytest starts
   <h2>12 · Interview Prep</h2>
 
   <details open>
-    <summary>🎯 Questions this project answers</summary>
+    <summary>Questions this project answers</summary>
     <div class="details-body">
       <table>
         <tr><th>Interview Question</th><th>Your Answer</th></tr>

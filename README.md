@@ -1,4 +1,4 @@
-# pytest Framework Skeleton 🧪
+# pytest Framework Skeleton
 
 [![Tests](https://github.com/tshimbo/pytest-framework-skeleton/actions/workflows/test.yml/badge.svg)](https://github.com/tshimbo/pytest-framework-skeleton/actions/workflows/test.yml)
 
@@ -6,7 +6,7 @@
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 pytest-framework-skeleton/
@@ -31,7 +31,7 @@ pytest-framework-skeleton/
 └── README.md
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Create and activate virtual environment
@@ -48,7 +48,7 @@ make test
 make smoke
 ```
 
-## 🧰 Available Make Targets
+## Available Make Targets
 
 | Command          | Description                                  |
 |------------------|----------------------------------------------|
@@ -65,7 +65,7 @@ make smoke
 | `make ci`        | Full local CI: lint → typecheck → cov → report |
 | `make clean`     | Remove all generated artifacts               |
 
-## 🔧 Key Concepts Demonstrated
+## Key Concepts Demonstrated
 
 ### Conftest Hierarchy
 - **`tests/conftest.py`** — Root fixtures available everywhere: `sample_buy_order`, `sample_sell_order`, `make_order` factory, `db_connection` (session-scoped)
@@ -86,7 +86,7 @@ make smoke
 ### Parametrize
 See `test_order_validator.py` — 5 validation cases in a single test function with descriptive IDs.
 
-## 🔄 How to Extend
+## How to Extend
 
 ### Adding a new fixture
 1. Decide the scope (session/module/function) and audience (all tests vs. unit vs. integration)
@@ -108,13 +108,13 @@ def test_symbol_lookup(input, expected):
 2. Name it `test_*.py`
 3. Import fixtures by parameter name — no manual imports needed
 
-## 📊 CI Pipeline
+## CI Pipeline
 
 On every push and PR:
-1. ✅ **Lint** — flake8 with 120 char line limit
-2. ✅ **Type check** — mypy strict mode
-3. ✅ **Tests + Coverage** — Fails if coverage drops below 80%
-4. ✅ **Reports** — HTML + JSON uploaded as artifacts
+1. **Lint** — flake8 with 120 char line limit
+2. **Type check** — mypy strict mode
+3. **Tests + Coverage** — Fails if coverage drops below 80%
+4. **Reports** — HTML + JSON uploaded as artifacts
 
 Matrix tested on Python 3.11 and 3.12.
 

@@ -176,4 +176,4 @@ class TestOrderSubmission:
             urllib.request.urlopen(req)
             assert False, "Expected HTTP 400"  # If we get here, the test fails
         except urllib.error.HTTPError as e:
-            assert e.code == 400  # ✅ Server correctly rejected bad input
+            assert e.code == 400  # PASS Server correctly rejected bad input
