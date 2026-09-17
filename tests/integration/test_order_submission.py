@@ -28,7 +28,7 @@ import urllib.request    # Python's built-in HTTP client (no pip install needed)
 
 import pytest
 
-from src.models.order import Order, Side, OrderType
+from src.models.order import Order
 # Direct import of the handler class to inspect its received_orders list.
 # In a real system, you'd query an API instead of peeking at server internals.
 from tests.integration.conftest import OrderSubmissionHandler

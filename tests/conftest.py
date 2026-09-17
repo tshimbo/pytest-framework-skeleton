@@ -54,7 +54,6 @@ HOW THIS MAPS TO CITADEL SECURITIES:
 """
 
 # ─── IMPORTS ────────────────────────────────────────────────────────────────
-import json
 import time
 from datetime import datetime
 from typing import Generator
@@ -62,7 +61,7 @@ from typing import Generator
 import pytest  # The testing framework. Provides @pytest.fixture, marks, hooks, etc.
 
 # Import our own source code so fixtures can create Order objects.
-from src.models.order import Order, OrderType, OrderStatus, Side
+from src.models.order import Order, OrderType, Side
 
 
 # ═══════════════════════════════════════════════════════════════════════

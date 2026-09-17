@@ -1,6 +1,6 @@
 # pytest Framework Skeleton 🧪
 
-[![Tests](https://github.com/YOUR_USERNAME/pytest-framework-skeleton/actions/workflows/test.yml/badge.svg)](https://github.com/YOUR_USERNAME/pytest-framework-skeleton/actions/workflows/test.yml)
+[![Tests](https://github.com/tshimbo/pytest-framework-skeleton/actions/workflows/test.yml/badge.svg)](https://github.com/tshimbo/pytest-framework-skeleton/actions/workflows/test.yml)
 
 > A reusable pytest project with shared fixtures, conftest hierarchy, parametrize, HTML/JSON reporting, and GitHub Actions CI. Built as **Project 1** of the SET (Software Engineer in Test) preparation roadmap.
 

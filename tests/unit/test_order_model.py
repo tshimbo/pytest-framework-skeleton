@@ -22,7 +22,6 @@ NAMING CONVENTIONS:
     - Non-test helper methods can have any name (e.g., _submit_order)
 """
 
-import pytest
 from src.models.order import Order, Side, OrderType, OrderStatus
 
 

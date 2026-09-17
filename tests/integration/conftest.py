@@ -144,4 +144,4 @@ def http_server() -> Generator[tuple[str, int], None, None]:
 
     # ── TEARDOWN PHASE ───
     server.shutdown()  # Gracefully stop the server (waits for in-flight requests)
-    print(f"\n[FIXTURE] HTTP server stopped")
+    print("\n[FIXTURE] HTTP server stopped")
